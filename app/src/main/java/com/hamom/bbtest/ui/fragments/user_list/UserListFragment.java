@@ -61,7 +61,9 @@ public class UserListFragment extends Fragment {
 
   private void initView(View view) {
 
-    mAdapter = new UserListAdapter(getCallback());
+    if (AppConfig.DEBUG) Log.d(TAG, "initView: " + mAdapter);
+
+    if (mAdapter == null) mAdapter = new UserListAdapter(getCallback());
 
     if (userRecycler.getLayoutManager() == null) {
       userRecycler.setLayoutManager(new LinearLayoutManager(view.getContext()));
