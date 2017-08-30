@@ -1,0 +1,61 @@
+package com.hamom.bbtest.ui.fragments.user_list;
+
+import android.util.Log;
+import com.hamom.bbtest.data.network.ApiService;
+import com.hamom.bbtest.data.network.responce.User;
+import com.hamom.bbtest.di.scopes.UserListScope;
+import com.hamom.bbtest.ui.base.BasePresenter;
+import com.hamom.bbtest.utils.AppConfig;
+import com.hamom.bbtest.utils.ConstantManager;
+import java.util.List;
+import javax.inject.Inject;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+/**
+ * Created by hamom on 30.08.17.
+ */
+@UserListScope
+public class UserListPresenter extends BasePresenter<UserListFragment>{
+  private static String TAG = ConstantManager.TAG_PREFIX + "UserListPres: ";
+  private ApiService mApiService;
+
+  @Inject
+  UserListPresenter(ApiService apiService) {
+    mApiService = apiService;
+  }
+
+  @Override
+  public void takeView(UserListFragment view) {
+    super.takeView(view);
+    fetchAllUsers();
+  }
+
+  private void fetchAllUsers() {
+    if (AppConfig.DEBUG) Log.d(TAG, "fetchAllUsers: ");
+
+    Call<List<User>> call = mApiService.getAllUsers();
+    call.enqueue(new Callback<List<User>>() {
+      @Override
+      public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+        if (response.isSuccessful() && response.code() == 200){
+          updateView(response.body());
+        }
+      }
+
+      @Override
+      public void onFailure(Call<List<User>> call, Throwable t) {
+
+      }
+    });
+  }
+
+  private void updateView(List<User> users) {
+    mView.setUsers(users);
+  }
+
+  public void onItemClick(User user) {
+    mView.showMessage(String.valueOf(user.getId()));
+  }
+}
