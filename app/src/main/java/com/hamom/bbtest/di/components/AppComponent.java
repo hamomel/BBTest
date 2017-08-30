@@ -16,4 +16,5 @@ public interface AppComponent {
   Context getAppContext();
 
   UserListComponent getUserListComponent();
+  EditComponent getEditComponent();
 }

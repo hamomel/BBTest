@@ -16,6 +16,9 @@ import butterknife.ButterKnife;
 import com.hamom.bbtest.App;
 import com.hamom.bbtest.R;
 import com.hamom.bbtest.data.network.responce.User;
+import com.hamom.bbtest.ui.activities.MainActivity;
+import com.hamom.bbtest.ui.base.BaseFragment;
+import com.hamom.bbtest.ui.fragments.edit.EditFragment;
 import com.hamom.bbtest.utils.AppConfig;
 import com.hamom.bbtest.utils.ConstantManager;
 import java.util.List;
@@ -25,12 +28,10 @@ import javax.inject.Inject;
  * Created by hamom on 30.08.17.
  */
 
-public class UserListFragment extends Fragment {
+public class UserListFragment extends BaseFragment<UserListPresenter> {
   private static String TAG = ConstantManager.TAG_PREFIX + "UserListFrag: ";
   private static final String RECYCLER_STATE = "RECYCLER_STATE";
 
-  @Inject
-  UserListPresenter mPresenter;
 
   @BindView(R.id.user_recycler)
   RecyclerView userRecycler;
@@ -38,11 +39,13 @@ public class UserListFragment extends Fragment {
   private UserListAdapter mAdapter;
 
   @Override
-  public void onCreate(@Nullable Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    if (AppConfig.DEBUG) Log.d(TAG, "onCreate: ");
-
+  protected void initDagger() {
     App.getAppComponent().getUserListComponent().inject(this);
+  }
+
+  @Override
+  protected void setFabVisibility() {
+    getMainActivity().setFabVisible(true);
   }
 
   @Nullable
@@ -55,7 +58,6 @@ public class UserListFragment extends Fragment {
     View view = inflater.inflate(R.layout.ftagment_user_list, container, false);
     ButterKnife.bind(this, view);
     initView(view);
-    mPresenter.takeView(this);
     return view;
   }
 
@@ -99,12 +101,6 @@ public class UserListFragment extends Fragment {
     super.onSaveInstanceState(outState);
   }
 
-  @Override
-  public void onDestroyView() {
-    mPresenter.dropView();
-    super.onDestroyView();
-  }
-
   public void setUsers(List<User> users) {
     if (AppConfig.DEBUG) Log.d(TAG, "setUsers: ");
 
@@ -113,5 +109,11 @@ public class UserListFragment extends Fragment {
 
   public void showMessage(String text) {
     Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+  }
+
+  public void setEditFragment(User user) {
+    EditFragment fragment = new EditFragment();
+    fragment.setUser(user);
+    getMainActivity().setDetailFragment(fragment);
   }
 }

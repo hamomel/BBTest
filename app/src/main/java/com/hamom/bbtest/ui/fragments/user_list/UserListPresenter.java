@@ -20,11 +20,10 @@ import retrofit2.Response;
 @UserListScope
 public class UserListPresenter extends BasePresenter<UserListFragment>{
   private static String TAG = ConstantManager.TAG_PREFIX + "UserListPres: ";
-  private NetworkDataProvider mNetworkDataProvider;
 
   @Inject
   UserListPresenter(NetworkDataProvider networkDataProvider) {
-    mNetworkDataProvider = networkDataProvider;
+    super(networkDataProvider);
   }
 
   @Override
@@ -56,6 +55,6 @@ public class UserListPresenter extends BasePresenter<UserListFragment>{
   }
 
   void onItemClick(User user) {
-    mView.showMessage(String.valueOf(user.getId()));
+    mView.setEditFragment(user);
   }
 }

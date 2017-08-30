@@ -1,4 +1,8 @@
 <resources>
   <string name="app_name">BBTest</string>
   <string name="action_settings">Settings</string>
+  <string name="first_name">Имя</string>
+  <string name="last_name">Фамилия</string>
+  <string name="email">e-mail</string>
+  <string name="save">Сохранить</string>
 </resources>
