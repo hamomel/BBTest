@@ -1,7 +1,6 @@
 package com.hamom.bbtest.ui.fragments.user_list;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -11,8 +10,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.amulyakhare.textdrawable.TextDrawable;
-import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.hamom.bbtest.R;
 import com.hamom.bbtest.data.network.responce.User;
 import com.hamom.bbtest.utils.ConstantManager;
@@ -20,6 +17,8 @@ import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.hamom.bbtest.utils.TextAvatarCreator.createAvatar;
 
 /**
  * Created by hamom on 30.08.17.
@@ -31,11 +30,11 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
   private Context mContext;
   private UserCallback mCallback;
 
-  public UserListAdapter(UserCallback callback) {
+  UserListAdapter(UserCallback callback) {
     mCallback = callback;
   }
 
-  public void setUsers(List<User> users) {
+  void setUsers(List<User> users) {
     mUsers = users;
     notifyDataSetChanged();
   }
@@ -82,13 +81,6 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
     });
   }
 
-  private Drawable createAvatar(User user) {
-    ColorGenerator generator = ColorGenerator.MATERIAL;
-    String initials = user.getFirstName().substring(0, 1).toUpperCase() +
-        user.getLastName().substring(0, 1).toUpperCase();
-    return TextDrawable.builder().buildRound(initials, generator.getColor(initials));
-  }
-
   @Override
   public int getItemCount() {
     return mUsers.size();
@@ -113,7 +105,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
     }
   }
 
-  public interface UserCallback {
+  interface UserCallback {
     void onClick(User user);
   }
 }

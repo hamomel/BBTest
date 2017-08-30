@@ -2,6 +2,7 @@ package com.hamom.bbtest.ui.fragments.user_list;
 
 import android.util.Log;
 import com.hamom.bbtest.data.network.ApiService;
+import com.hamom.bbtest.data.network.NetworkDataProvider;
 import com.hamom.bbtest.data.network.responce.User;
 import com.hamom.bbtest.di.scopes.UserListScope;
 import com.hamom.bbtest.ui.base.BasePresenter;
@@ -19,11 +20,11 @@ import retrofit2.Response;
 @UserListScope
 public class UserListPresenter extends BasePresenter<UserListFragment>{
   private static String TAG = ConstantManager.TAG_PREFIX + "UserListPres: ";
-  private ApiService mApiService;
+  private NetworkDataProvider mNetworkDataProvider;
 
   @Inject
-  UserListPresenter(ApiService apiService) {
-    mApiService = apiService;
+  UserListPresenter(NetworkDataProvider networkDataProvider) {
+    mNetworkDataProvider = networkDataProvider;
   }
 
   @Override
@@ -35,8 +36,7 @@ public class UserListPresenter extends BasePresenter<UserListFragment>{
   private void fetchAllUsers() {
     if (AppConfig.DEBUG) Log.d(TAG, "fetchAllUsers: ");
 
-    Call<List<User>> call = mApiService.getAllUsers();
-    call.enqueue(new Callback<List<User>>() {
+    mNetworkDataProvider.getAllUsers(new Callback<List<User>>() {
       @Override
       public void onResponse(Call<List<User>> call, Response<List<User>> response) {
         if (response.isSuccessful() && response.code() == 200){
@@ -55,7 +55,7 @@ public class UserListPresenter extends BasePresenter<UserListFragment>{
     mView.setUsers(users);
   }
 
-  public void onItemClick(User user) {
+  void onItemClick(User user) {
     mView.showMessage(String.valueOf(user.getId()));
   }
 }

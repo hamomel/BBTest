@@ -26,8 +26,8 @@ import javax.inject.Inject;
  */
 
 public class UserListFragment extends Fragment {
-  public static final String RECYCLER_STATE = "RECYCLER_STATE";
   private static String TAG = ConstantManager.TAG_PREFIX + "UserListFrag: ";
+  private static final String RECYCLER_STATE = "RECYCLER_STATE";
 
   @Inject
   UserListPresenter mPresenter;
@@ -61,15 +61,12 @@ public class UserListFragment extends Fragment {
 
   private void initView(View view) {
 
-    if (AppConfig.DEBUG) Log.d(TAG, "initView: " + mAdapter);
-
     if (mAdapter == null) mAdapter = new UserListAdapter(getCallback());
+    userRecycler.setAdapter(mAdapter);
 
     if (userRecycler.getLayoutManager() == null) {
       userRecycler.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }
-
-    userRecycler.setAdapter(mAdapter);
   }
 
   private UserListAdapter.UserCallback getCallback() {
