@@ -18,7 +18,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hamom.bbtest.utils.TextAvatarCreator.createAvatar;
+import static com.hamom.bbtest.utils.TextDrawableCreator.createAvatar;
 
 /**
  * Created by hamom on 30.08.17.

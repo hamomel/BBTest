@@ -5,4 +5,6 @@
   <string name="last_name">Фамилия</string>
   <string name="email">e-mail</string>
   <string name="save">Сохранить</string>
+  <string name="required_field">Обязательное поле</string>
+  <string name="incorrect_format">Не верный формат</string>
 </resources>

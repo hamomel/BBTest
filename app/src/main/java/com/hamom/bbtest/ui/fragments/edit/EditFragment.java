@@ -15,7 +15,7 @@ import com.hamom.bbtest.App;
 import com.hamom.bbtest.R;
 import com.hamom.bbtest.data.network.responce.User;
 import com.hamom.bbtest.ui.base.BaseFragment;
-import com.hamom.bbtest.utils.TextAvatarCreator;
+import com.hamom.bbtest.utils.TextDrawableCreator;
 import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -50,10 +50,11 @@ public class EditFragment extends BaseFragment<EditPresenter> {
 
   @Override
   protected void setFabVisibility() {
-    getMainActivity().setFabVisible(false);
+    if (!getMainActivity().isMultiPane())
+      getMainActivity().setFabVisible(false);
   }
 
-  public void setUser(User user){
+  public void setUser(User user) {
     mUser = user;
   }
 
@@ -68,10 +69,14 @@ public class EditFragment extends BaseFragment<EditPresenter> {
   }
 
   private void initView() {
-    saveBtn.setOnClickListener(getOnClickListener());
-    if (mUser == null) return;
+    saveBtn.setOnClickListener(getSaveClickListener());
+    avatarEditIv.setOnClickListener(getAvatarClickListener());
+    if (mUser == null) {
+      avatarEditIv.setBackground(TextDrawableCreator.create("+"));
+      return;
+    }
 
-    avatarEditIv.setBackground(TextAvatarCreator.createAvatar(mUser));
+    avatarEditIv.setBackground(TextDrawableCreator.createAvatar(mUser));
     String avatar = TextUtils.isEmpty(mUser.getAvatarUrl()) ? null : mUser.getAvatarUrl();
     Picasso.with(getActivity()).load(avatar).into(avatarEditIv);
     firstNameEt.setText(mUser.getFirstName());
@@ -79,13 +84,61 @@ public class EditFragment extends BaseFragment<EditPresenter> {
     emailEt.setText(mUser.getEmail());
   }
 
-  private View.OnClickListener getOnClickListener() {
+  private View.OnClickListener getAvatarClickListener() {
     return new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-
+        mPresenter.onAvatarClick();
       }
     };
+  }
 
+  private View.OnClickListener getSaveClickListener() {
+    return new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        String firstName = firstNameEt.getText().toString();
+        String lastName = lastNameEt.getText().toString();
+        String email = emailEt.getText().toString();
+        mPresenter.onSaveClick(firstName, lastName, email, mUser);
+      }
+    };
+  }
+
+  public void showFirstNameEmptyError() {
+    showFirstNameError(getString(R.string.required_field));
+  }
+
+  public void showLastNameEmptyError() {
+    showLastNameError(getString(R.string.required_field));
+  }
+
+  public void showEmailEmptyError() {
+    showEmailError(getString(R.string.required_field));
+  }
+
+  public void showEmailIncorrectError() {
+    showEmailError(getString(R.string.incorrect_format));
+  }
+
+  private void showFirstNameError(String error) {
+    firstNameEditLayout.setErrorEnabled(true);
+    firstNameEditLayout.setError(error);
+  }
+
+  private void showLastNameError(String error) {
+    lastNameEditLayout.setErrorEnabled(true);
+    lastNameEditLayout.setError(error);
+  }
+
+  private void showEmailError(String string) {
+    emailEditLayout.setErrorEnabled(true);
+    emailEditLayout.setError(string);
+  }
+
+  public void hideAllErrors() {
+    firstNameEditLayout.setErrorEnabled(false);
+    lastNameEditLayout.setErrorEnabled(false);
+    emailEditLayout.setErrorEnabled(false);
   }
 }

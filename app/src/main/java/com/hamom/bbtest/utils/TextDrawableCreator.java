@@ -9,12 +9,16 @@ import com.hamom.bbtest.data.network.responce.User;
  * Created by hamom on 30.08.17.
  */
 
-public class TextAvatarCreator {
+public class TextDrawableCreator {
 
   public static Drawable createAvatar(User user) {
-    ColorGenerator generator = ColorGenerator.MATERIAL;
     String initials = user.getFirstName().substring(0, 1).toUpperCase() +
         user.getLastName().substring(0, 1).toUpperCase();
-    return TextDrawable.builder().buildRound(initials, generator.getColor(initials));
+    return create(initials);
+  }
+
+  public static Drawable create(String text){
+    ColorGenerator generator = ColorGenerator.MATERIAL;
+    return TextDrawable.builder().buildRound(text, generator.getColor(text));
   }
 }

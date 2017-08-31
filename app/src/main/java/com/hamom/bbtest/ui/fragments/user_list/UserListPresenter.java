@@ -42,10 +42,11 @@ public class UserListPresenter extends BasePresenter<UserListFragment>{
           updateView(response.body());
         }
       }
+      // TODO: 31.08.17 handle error
 
       @Override
       public void onFailure(Call<List<User>> call, Throwable t) {
-
+        // TODO: 31.08.17 handle error
       }
     });
   }

@@ -76,4 +76,8 @@ public class MainActivity extends AppCompatActivity {
       mFAB.setVisibility(View.GONE);
     }
   }
+
+  public boolean isMultiPane() {
+    return mDetailFrame != null;
+  }
 }
