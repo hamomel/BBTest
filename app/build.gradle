@@ -54,5 +54,7 @@ dependencies {
   //TextDrawable
   compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
 
-
+  //AWS
+  compile 'com.amazonaws:aws-android-sdk-core:2.4.6'
+  compile 'com.amazonaws:aws-android-sdk-s3:2.4.6'
 }

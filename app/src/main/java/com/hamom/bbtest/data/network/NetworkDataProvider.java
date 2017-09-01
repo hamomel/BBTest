@@ -2,6 +2,7 @@ package com.hamom.bbtest.data.network;
 
 import com.hamom.bbtest.data.network.request.CreateUserReq;
 import com.hamom.bbtest.data.network.responce.User;
+import java.io.File;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -23,12 +24,12 @@ public class NetworkDataProvider {
     mApiService.getAllUsers().enqueue(callback);
   }
 
-  public void createUser(CreateUserReq req, String avatarFileUrl, Callback<Void> callback){
+  public void createUser(CreateUserReq req, File avatarFileUrl, Callback<Void> callback){
     // TODO: 31.08.17 implement avatar upload
     mApiService.createUser(req).enqueue(callback);
   }
 
-  public void editUser(String userId, CreateUserReq req, String avatarFileUrl, Callback<Void> callback){
+  public void editUser(String userId, CreateUserReq req, File avatarFileUrl, Callback<Void> callback){
     // TODO: 31.08.17 implement avatar upload
     mApiService.editUser(userId, req).enqueue(callback);
   }

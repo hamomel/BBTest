@@ -96,8 +96,10 @@ public class UserListFragment extends BaseFragment<UserListPresenter> {
   public void onSaveInstanceState(Bundle outState) {
     if (AppConfig.DEBUG) Log.d(TAG, "onSaveInstanceState: ");
 
-    Parcelable recyclerState = userRecycler.getLayoutManager().onSaveInstanceState();
-    outState.putParcelable(RECYCLER_STATE, recyclerState);
+    if (userRecycler != null){
+      Parcelable recyclerState = userRecycler.getLayoutManager().onSaveInstanceState();
+      outState.putParcelable(RECYCLER_STATE, recyclerState);
+    }
     super.onSaveInstanceState(outState);
   }
 

@@ -1,7 +1,13 @@
 package com.hamom.bbtest.ui.fragments.edit;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
@@ -9,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.hamom.bbtest.App;
@@ -50,8 +57,7 @@ public class EditFragment extends BaseFragment<EditPresenter> {
 
   @Override
   protected void setFabVisibility() {
-    if (!getMainActivity().isMultiPane())
-      getMainActivity().setFabVisible(false);
+    if (!getMainActivity().isMultiPane()) getMainActivity().setFabVisible(false);
   }
 
   public void setUser(User user) {
@@ -105,6 +111,10 @@ public class EditFragment extends BaseFragment<EditPresenter> {
     };
   }
 
+  public void setPhoto(Uri photoUri) {
+    Picasso.with(getActivity()).load(photoUri).into(avatarEditIv);
+  }
+
   public void showFirstNameEmptyError() {
     showFirstNameError(getString(R.string.required_field));
   }
@@ -140,5 +150,72 @@ public class EditFragment extends BaseFragment<EditPresenter> {
     firstNameEditLayout.setErrorEnabled(false);
     lastNameEditLayout.setErrorEnabled(false);
     emailEditLayout.setErrorEnabled(false);
+  }
+
+  public void showChoosePhotoDialog() {
+    String source[] = {
+        getString(R.string.load_from_gallery), getString(R.string.take_photo),
+        getString(R.string.cancel)
+    };
+    android.support.v7.app.AlertDialog.Builder alertDialog =
+        new android.support.v7.app.AlertDialog.Builder(getActivity());
+    alertDialog.setTitle(R.string.choose_photo);
+    alertDialog.setItems(source, new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        switch (which) {
+          case 0:
+            mPresenter.chooseGallery();
+            break;
+          case 1:
+            mPresenter.chooseCamera();
+            break;
+          case 2:
+            dialog.cancel();
+            break;
+        }
+      }
+    });
+    alertDialog.show();
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+      @NonNull int[] grantResults) {
+    mPresenter.onRequestPermissionsResult(requestCode, permissions, grantResults);
+  }
+
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    mPresenter.onActivityResult(requestCode, resultCode, data);
+  }
+
+  public void showPermissionNecessary() {
+    if (getView() == null) return;
+
+    Snackbar.make(getView(), getString(R.string.need_grant_permission), Snackbar.LENGTH_LONG)
+        .setAction(getString(R.string.grant), new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            openAppSettings();
+          }
+        })
+    .show();
+  }
+
+  private void openAppSettings() {
+    Intent intent = new Intent();
+    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+    Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
+    intent.setData(uri);
+    startActivity(intent);
+  }
+
+  public void showCantTakePhoto() {
+    showToast(getString(R.string.cant_take_photo));
+  }
+
+  private void showToast(String message) {
+    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
   }
 }
