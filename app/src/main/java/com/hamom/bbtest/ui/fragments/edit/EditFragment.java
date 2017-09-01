@@ -97,7 +97,7 @@ public class EditFragment extends BaseFragment<EditPresenter> {
 
     avatarEditIv.setBackground(TextDrawableCreator.createAvatar(mUser));
     String avatar = TextUtils.isEmpty(mUser.getAvatarUrl()) ? null : mUser.getAvatarUrl();
-    Picasso.with(getActivity()).load(avatar).into(avatarEditIv);
+    Picasso.with(getActivity()).load(avatar).fit().into(avatarEditIv);
     firstNameEt.setText(mUser.getFirstName());
     lastNameEt.setText(mUser.getLastName());
     emailEt.setText(mUser.getEmail());

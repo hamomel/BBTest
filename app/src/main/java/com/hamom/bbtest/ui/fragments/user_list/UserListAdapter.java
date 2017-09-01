@@ -67,6 +67,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
     String avatar = TextUtils.isEmpty(user.getAvatarUrl()) ? null : user.getAvatarUrl();
     Picasso.with(mContext)
         .load(avatar)
+        .fit()
         .into(holder.avatarIv);
     //it is necessary because CircleImageView doesn't allow to load TextDrawable
     holder.avatarIv.setBackground(createAvatar(user));
