@@ -2,14 +2,19 @@ package com.hamom.bbtest.ui.fragments.edit;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,16 +27,19 @@ import com.hamom.bbtest.App;
 import com.hamom.bbtest.R;
 import com.hamom.bbtest.data.network.responce.User;
 import com.hamom.bbtest.ui.base.BaseFragment;
+import com.hamom.bbtest.utils.ConstantManager;
 import com.hamom.bbtest.utils.TextDrawableCreator;
 import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
+import java.io.File;
+import java.util.List;
 
 /**
  * Created by hamom on 30.08.17.
  */
 
 public class EditFragment extends BaseFragment<EditPresenter> {
-  private User mUser;
+  private static String TAG = ConstantManager.TAG_PREFIX + "EditFragment: ";
 
   @BindView(R.id.avatar_edit_iv)
   CircleImageView avatarEditIv;
@@ -49,6 +57,9 @@ public class EditFragment extends BaseFragment<EditPresenter> {
   TextInputEditText emailEt;
   @BindView(R.id.save_btn)
   Button saveBtn;
+
+  private Uri mFileUri;
+  private User mUser;
 
   @Override
   protected void initDagger() {
@@ -179,17 +190,6 @@ public class EditFragment extends BaseFragment<EditPresenter> {
     alertDialog.show();
   }
 
-  @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-      @NonNull int[] grantResults) {
-    mPresenter.onRequestPermissionsResult(requestCode, permissions, grantResults);
-  }
-
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    mPresenter.onActivityResult(requestCode, resultCode, data);
-  }
-
   public void showPermissionNecessary() {
     if (getView() == null) return;
 
@@ -200,7 +200,7 @@ public class EditFragment extends BaseFragment<EditPresenter> {
             openAppSettings();
           }
         })
-    .show();
+        .show();
   }
 
   private void openAppSettings() {
@@ -217,5 +217,50 @@ public class EditFragment extends BaseFragment<EditPresenter> {
 
   private void showToast(String message) {
     Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+  }
+
+  public void sendCameraIntent(File photoFile) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      mFileUri =
+          FileProvider.getUriForFile(getActivity(), ConstantManager.FILE_PROVIDER_AUTHORITY,
+              photoFile);
+    } else {
+      mFileUri = Uri.fromFile(photoFile);
+    }
+
+    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
+
+    // grant permission to allow camera app write our file
+    grantUriPermission(mFileUri, takePictureIntent);
+    startActivityForResult(takePictureIntent, ConstantManager.REQUEST_CAMERA_PICTURE);
+  }
+
+
+  private void grantUriPermission(Uri uriForFile, Intent intent) {
+    List<ResolveInfo> resolvedIntentActivities = getActivity().getPackageManager()
+        .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+    for (ResolveInfo resolvedIntentInfo : resolvedIntentActivities) {
+      String packageName = resolvedIntentInfo.activityInfo.packageName;
+
+      getActivity().grantUriPermission(packageName, uriForFile,
+          Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    }
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+      @NonNull int[] grantResults) {
+    mPresenter.onRequestPermissionsResult(requestCode, permissions, grantResults);
+  }
+
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == ConstantManager.REQUEST_CAMERA_PICTURE){
+      getActivity().revokeUriPermission(mFileUri,
+          Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+      mFileUri = null;
+    }
+    mPresenter.onActivityResult(requestCode, resultCode, data);
   }
 }

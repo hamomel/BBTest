@@ -1,8 +1,10 @@
 package com.hamom.bbtest.ui.fragments.edit;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -23,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import javax.inject.Inject;
 import retrofit2.Call;
@@ -52,16 +55,16 @@ public class EditPresenter extends BasePresenter<EditFragment> {
       if (user != null) {
         CreateUserReq req = new CreateUserReq(firstName, lastName, email);
         req.setAvatarUrl(user.getAvatarUrl());
-        mNetworkDataProvider.editUser(String.valueOf(user.getId()), req, mPhotoFile,
+        mNetworkDataProvider.editUser(String.valueOf(user.getId()), req, mPhotoUri,
             getEditCallback());
       } else {
         CreateUserReq req = new CreateUserReq(firstName, lastName, email);
-        mNetworkDataProvider.createUser(req, mPhotoFile, getCreateCallback());
+        mNetworkDataProvider.createUser(req, mPhotoUri, getCreateCallback());
       }
     }
   }
 
-  private Callback<Void> getCreateCallback() {
+  private Callback<Void> getEditCallback() {
     return new Callback<Void>() {
       @Override
       public void onResponse(Call<Void> call, Response<Void> response) {
@@ -75,7 +78,7 @@ public class EditPresenter extends BasePresenter<EditFragment> {
     };
   }
 
-  private Callback<Void> getEditCallback() {
+  private Callback<Void> getCreateCallback() {
     return new Callback<Void>() {
       @Override
       public void onResponse(Call<Void> call, Response<Void> response) {
@@ -166,17 +169,8 @@ public class EditPresenter extends BasePresenter<EditFragment> {
       mView.showCantTakePhoto();
       return;
     }
-    Uri uriForFile;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      uriForFile = FileProvider.getUriForFile(mView.getActivity(), ConstantManager.FILE_PROVIDER_AUTHORITY, mPhotoFile);
-    } else {
-      uriForFile = Uri.fromFile(mPhotoFile);
-    }
 
-    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
-    mView.startActivityForResult(takePictureIntent,
-        ConstantManager.REQUEST_CAMERA_PICTURE);
+    mView.sendCameraIntent(mPhotoFile);
   }
 
   private File createImageFile() {
@@ -240,6 +234,7 @@ public class EditPresenter extends BasePresenter<EditFragment> {
       mView.showPermissionNecessary();
     }
   }
+
   @SuppressLint("NewApi")
   void onActivityResult(int requestCode, int resultCode, Intent data) {
     switch (requestCode){
