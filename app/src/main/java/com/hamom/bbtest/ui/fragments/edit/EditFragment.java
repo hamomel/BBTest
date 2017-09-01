@@ -1,5 +1,6 @@
 package com.hamom.bbtest.ui.fragments.edit;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -60,6 +61,7 @@ public class EditFragment extends BaseFragment<EditPresenter> {
 
   private Uri mFileUri;
   private User mUser;
+  private ProgressDialog mProgressDialog;
 
   @Override
   protected void initDagger() {
@@ -209,6 +211,20 @@ public class EditFragment extends BaseFragment<EditPresenter> {
     Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
     intent.setData(uri);
     startActivity(intent);
+  }
+
+  public void showProgressDialog() {
+    mProgressDialog = new ProgressDialog(getActivity());
+    mProgressDialog.setMessage(getString(R.string.uploading));
+    mProgressDialog.show();
+  }
+
+  public void hideProgressDialog(){
+    mProgressDialog.dismiss();
+  }
+
+  public void showUploadSuccess() {
+    showToast(getString(R.string.data_renewed));
   }
 
   public void showCantTakePhoto() {

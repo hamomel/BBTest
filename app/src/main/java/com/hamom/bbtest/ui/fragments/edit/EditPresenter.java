@@ -52,6 +52,7 @@ public class EditPresenter extends BasePresenter<EditFragment> {
   void onSaveClick(String firstName, String lastName, String email, User user) {
     mView.hideAllErrors();
     if (verifyFields(firstName, lastName, email)) {
+      mView.showProgressDialog();
       if (user != null) {
         CreateUserReq req = new CreateUserReq(firstName, lastName, email);
         req.setAvatarUrl(user.getAvatarUrl());
@@ -68,11 +69,13 @@ public class EditPresenter extends BasePresenter<EditFragment> {
     return new Callback<Void>() {
       @Override
       public void onResponse(Call<Void> call, Response<Void> response) {
-        // TODO: 31.08.17 handle result
+        mView.hideProgressDialog();
+        mView.showUploadSuccess();
       }
 
       @Override
       public void onFailure(Call<Void> call, Throwable t) {
+        mView.hideProgressDialog();
         // TODO: 31.08.17 handle error
       }
     };
@@ -82,11 +85,13 @@ public class EditPresenter extends BasePresenter<EditFragment> {
     return new Callback<Void>() {
       @Override
       public void onResponse(Call<Void> call, Response<Void> response) {
-        // TODO: 31.08.17 handle result
+        mView.hideProgressDialog();
+        mView.showUploadSuccess();
       }
 
       @Override
       public void onFailure(Call<Void> call, Throwable t) {
+        mView.hideProgressDialog();
         // TODO: 31.08.17 handle error
       }
     };
