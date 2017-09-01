@@ -17,6 +17,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import com.hamom.bbtest.App;
 import com.hamom.bbtest.R;
 import com.hamom.bbtest.data.network.responce.User;
 import com.hamom.bbtest.ui.base.BaseFragment;
+import com.hamom.bbtest.utils.AppConfig;
 import com.hamom.bbtest.utils.ConstantManager;
 import com.hamom.bbtest.utils.TextDrawableCreator;
 import com.squareup.picasso.Picasso;
@@ -75,12 +77,15 @@ public class EditFragment extends BaseFragment<EditPresenter> {
 
   public void setUser(User user) {
     mUser = user;
+    if (getView() != null) initView();
   }
 
   @Nullable
   @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
       Bundle savedInstanceState) {
+    if (AppConfig.DEBUG) Log.d(TAG, "onCreateView: " + mUser);
+
     View view = inflater.inflate(R.layout.fragment_edit, container, false);
     ButterKnife.bind(this, view);
     initView();
@@ -88,19 +93,24 @@ public class EditFragment extends BaseFragment<EditPresenter> {
   }
 
   private void initView() {
+    if (AppConfig.DEBUG) Log.d(TAG, "initView: " + mUser);
+
     saveBtn.setOnClickListener(getSaveClickListener());
     avatarEditIv.setOnClickListener(getAvatarClickListener());
     if (mUser == null) {
       avatarEditIv.setBackground(TextDrawableCreator.create("+"));
-      return;
+      avatarEditIv.setImageDrawable(null);
+      firstNameEt.setText("");
+      lastNameEt.setText("");
+      emailEt.setText("");
+    } else {
+      avatarEditIv.setBackground(TextDrawableCreator.createAvatar(mUser));
+      String avatar = TextUtils.isEmpty(mUser.getAvatarUrl()) ? null : mUser.getAvatarUrl();
+      Picasso.with(getActivity()).load(avatar).fit().into(avatarEditIv);
+      firstNameEt.setText(mUser.getFirstName());
+      lastNameEt.setText(mUser.getLastName());
+      emailEt.setText(mUser.getEmail());
     }
-
-    avatarEditIv.setBackground(TextDrawableCreator.createAvatar(mUser));
-    String avatar = TextUtils.isEmpty(mUser.getAvatarUrl()) ? null : mUser.getAvatarUrl();
-    Picasso.with(getActivity()).load(avatar).fit().into(avatarEditIv);
-    firstNameEt.setText(mUser.getFirstName());
-    lastNameEt.setText(mUser.getLastName());
-    emailEt.setText(mUser.getEmail());
   }
 
   private View.OnClickListener getAvatarClickListener() {
@@ -278,5 +288,13 @@ public class EditFragment extends BaseFragment<EditPresenter> {
       mFileUri = null;
     }
     mPresenter.onActivityResult(requestCode, resultCode, data);
+  }
+
+  public void onDataUploaded() {
+    if (getMainActivity().isMultiPane()){
+      getMainActivity().refreshUserList();
+    } else {
+      getMainActivity().setUserListFragment();
+    }
   }
 }

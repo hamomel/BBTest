@@ -32,7 +32,7 @@ public class UserListPresenter extends BasePresenter<UserListFragment>{
     fetchAllUsers();
   }
 
-  private void fetchAllUsers() {
+  public void fetchAllUsers() {
     if (AppConfig.DEBUG) Log.d(TAG, "fetchAllUsers: ");
 
     mNetworkDataProvider.getAllUsers(new Callback<List<User>>() {
@@ -52,7 +52,8 @@ public class UserListPresenter extends BasePresenter<UserListFragment>{
   }
 
   private void updateView(List<User> users) {
-    mView.setUsers(users);
+    if (mView != null)
+      mView.setUsers(users);
   }
 
   void onItemClick(User user) {

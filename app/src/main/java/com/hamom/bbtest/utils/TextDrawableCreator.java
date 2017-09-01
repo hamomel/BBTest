@@ -12,8 +12,8 @@ import com.hamom.bbtest.data.network.responce.User;
 public class TextDrawableCreator {
 
   public static Drawable createAvatar(User user) {
-    String initials = user.getFirstName().substring(0, 1).toUpperCase() +
-        user.getLastName().substring(0, 1).toUpperCase();
+    String initials = user.getFirstName().substring(0, 1) +
+        user.getLastName().substring(0, 1);
     return create(initials);
   }
 

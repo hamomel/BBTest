@@ -1,6 +1,5 @@
 package com.hamom.bbtest.ui.fragments.user_list;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -16,13 +15,10 @@ import butterknife.ButterKnife;
 import com.hamom.bbtest.App;
 import com.hamom.bbtest.R;
 import com.hamom.bbtest.data.network.responce.User;
-import com.hamom.bbtest.ui.activities.MainActivity;
 import com.hamom.bbtest.ui.base.BaseFragment;
-import com.hamom.bbtest.ui.fragments.edit.EditFragment;
 import com.hamom.bbtest.utils.AppConfig;
 import com.hamom.bbtest.utils.ConstantManager;
 import java.util.List;
-import javax.inject.Inject;
 
 /**
  * Created by hamom on 30.08.17.
@@ -109,13 +105,11 @@ public class UserListFragment extends BaseFragment<UserListPresenter> {
     mAdapter.setUsers(users);
   }
 
-  public void showMessage(String text) {
-    Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+  public void setEditFragment(User user) {
+    getMainActivity().setEditFragment(user);
   }
 
-  public void setEditFragment(User user) {
-    EditFragment fragment = new EditFragment();
-    fragment.setUser(user);
-    getMainActivity().setDetailFragment(fragment);
+  public void refreshData() {
+    mPresenter.fetchAllUsers();
   }
 }

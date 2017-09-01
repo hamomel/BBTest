@@ -1,16 +1,12 @@
 package com.hamom.bbtest.ui.fragments.edit;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.util.Patterns;
 import com.hamom.bbtest.data.network.NetworkDataProvider;
@@ -25,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.regex.Matcher;
 import javax.inject.Inject;
 import retrofit2.Call;
@@ -71,6 +66,7 @@ public class EditPresenter extends BasePresenter<EditFragment> {
       public void onResponse(Call<Void> call, Response<Void> response) {
         mView.hideProgressDialog();
         mView.showUploadSuccess();
+        mView.onDataUploaded();
       }
 
       @Override
@@ -87,6 +83,7 @@ public class EditPresenter extends BasePresenter<EditFragment> {
       public void onResponse(Call<Void> call, Response<Void> response) {
         mView.hideProgressDialog();
         mView.showUploadSuccess();
+        mView.onDataUploaded();
       }
 
       @Override

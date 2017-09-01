@@ -5,17 +5,19 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.FrameLayout;
 import com.hamom.bbtest.R;
+import com.hamom.bbtest.data.network.responce.User;
 import com.hamom.bbtest.ui.fragments.edit.EditFragment;
 import com.hamom.bbtest.ui.fragments.user_list.UserListFragment;
 
 public class MainActivity extends AppCompatActivity {
 
+  public static final String EDIT_FRAGMENT = "editFragment";
+  public static final String USER_LIST_FRAGMENT = "userListFragment";
   private FrameLayout mDetailFrame;
   private FloatingActionButton mFAB;
 
@@ -27,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     initToolbar();
     initFAB();
-    if (savedInstanceState == null)initView();
+    if (savedInstanceState == null) setUserListFragment();
   }
 
   private void initToolbar() {
@@ -40,32 +42,55 @@ public class MainActivity extends AppCompatActivity {
     mFAB.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        Fragment fragment = new EditFragment();
-        setDetailFragment(fragment);
+        setEditFragment(null);
       }
     });
   }
 
-  private void initView() {
-    setMainFragment(new UserListFragment(), false);
+  public void setUserListFragment() {
+    UserListFragment fragment =
+        ((UserListFragment) getFragmentManager().findFragmentByTag(USER_LIST_FRAGMENT));
+    if (fragment == null) {
+      fragment = new UserListFragment();
+    } else {
+      fragment.refreshData();
+    }
+    setMainFragment(fragment, false, USER_LIST_FRAGMENT);
   }
 
-  private void setMainFragment(Fragment fragment, boolean addToBackStack) {
+  private void setMainFragment(Fragment fragment, boolean addToBackStack, String tag) {
     FragmentManager fragmentManager = getFragmentManager();
     FragmentTransaction transaction = fragmentManager.beginTransaction();
-    transaction.replace(R.id.main_frame, fragment);
+    transaction.replace(R.id.main_frame, fragment, tag);
     if (addToBackStack) transaction.addToBackStack(null);
     transaction.commit();
   }
 
-  public void setDetailFragment(Fragment fragment){
-    if (mDetailFrame == null) {
-      setMainFragment(fragment, true);
+  public void setEditFragment(User user) {
+    EditFragment editFragment =
+        ((EditFragment) getFragmentManager().findFragmentByTag(EDIT_FRAGMENT));
+    if (editFragment == null){
+      editFragment = new EditFragment();
+    }
+    editFragment.setUser(user);
+
+    if (!isMultiPane()) {
+      setMainFragment(editFragment, true, EDIT_FRAGMENT);
     } else {
       FragmentManager fragmentManager = getFragmentManager();
       FragmentTransaction transaction = fragmentManager.beginTransaction();
-      transaction.replace(R.id.detail_frame, fragment);
+      transaction.replace(R.id.detail_frame, editFragment, EDIT_FRAGMENT);
       transaction.commit();
+    }
+  }
+
+  public void refreshUserList() {
+    UserListFragment fragment =
+        ((UserListFragment) getFragmentManager().findFragmentByTag(USER_LIST_FRAGMENT));
+    if (fragment == null) {
+      setUserListFragment();
+    } else {
+      fragment.refreshData();
     }
   }
 
